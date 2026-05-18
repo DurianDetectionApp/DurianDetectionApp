@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "Node16",
+    "rootDir": ".",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Node16",
+    "resolveJsonModule": true,
+    "types": ["node"]
+  },
+  "include": ["server.ts", "src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
+}
