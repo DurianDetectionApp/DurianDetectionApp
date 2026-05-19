@@ -61,10 +61,12 @@ export async function inferAudioWithModel(
     candidates.push({ command: env.pythonBin, args: [] });
   }
 
+  // Prefer system python3 paths commonly available in Linux containers
   candidates.push(
-    { command: "python", args: [] },
+    { command: "/usr/bin/python3", args: [] },
+    { command: "/usr/bin/python", args: [] },
     { command: "python3", args: [] },
-    { command: "py", args: ["-3"] },
+    { command: "python", args: [] },
   );
 
   let lastError: string | undefined;
