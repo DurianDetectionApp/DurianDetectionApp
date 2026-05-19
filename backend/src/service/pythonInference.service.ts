@@ -68,9 +68,19 @@ export async function inferAudioWithModel(
   );
 
   let lastError: string | undefined;
+  const attempts: string[] = [];
 
   try {
     for (const candidate of candidates) {
+      // Log which candidate we are about to try (helps debugging in production)
+      try {
+        // eslint-disable-next-line no-console
+        console.log(
+          `[python-infer] trying command: ${candidate.command} ${candidate.args.join(" ")}`,
+        );
+      } catch (err) {
+        // ignore
+      }
       const result = runPython(
         candidate.command,
         candidate.args,
@@ -84,11 +94,20 @@ export async function inferAudioWithModel(
 
       const stderr = `${result.stderr ?? ""}`.trim();
       const stdout = `${result.stdout ?? ""}`.trim();
-      lastError =
+      const errMsg =
         stderr ||
         stdout ||
         result.error?.message ||
         `Python exited with code ${result.status ?? "unknown"}`;
+
+      // record attempt detail
+      attempts.push(
+        `${candidate.command} -> status=${result.status ?? "?"} error=${(result.error as NodeJS.ErrnoException | undefined)?.message ?? "none"} stdout=${JSON.stringify(
+          stdout,
+        )} stderr=${JSON.stringify(stderr)}`,
+      );
+
+      lastError = errMsg;
 
       const errorCode = (result.error as NodeJS.ErrnoException | undefined)
         ?.code;
@@ -98,7 +117,12 @@ export async function inferAudioWithModel(
       }
     }
 
-    throw new Error(lastError || "Unable to execute Python inference.");
+    const details = attempts.join("\n");
+    throw new Error(
+      (lastError ? lastError + " - " : "") +
+        "Unable to execute Python inference. Attempts:\n" +
+        details,
+    );
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }

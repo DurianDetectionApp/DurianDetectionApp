@@ -12,7 +12,8 @@ export const env = {
   port: Number(process.env.PORT ?? 8080),
   host: process.env.HOST ?? "0.0.0.0",
   corsOrigin: process.env.CORS_ORIGIN ?? "*",
-  mongoUri: process.env.MONGODB_URI ?? "",
+  // Support either MONGODB_URI (preferred) or MONGODB_URL (common alternative)
+  mongoUri: process.env.MONGODB_URI ?? process.env.MONGODB_URL ?? "",
   pythonBin: process.env.PYTHON_BIN?.trim() || undefined,
   aiModelDir: process.env.AI_MODEL_DIR
     ? path.resolve(process.env.AI_MODEL_DIR)
