@@ -162,6 +162,80 @@ backend/
 
 ---
 
+## 🌐 Cách Deploy Backend Ra URL HTTPS Công Khai
+
+Mục tiêu của bước này là tạo ra một URL dạng `https://...` để app mobile có thể gọi được API thật trước khi lên store.
+
+### Phương án khuyến nghị: Render
+
+1. **Tạo MongoDB Atlas database**
+
+- Dùng URI MongoDB Atlas của bạn trong biến môi trường `MONGODB_URI`.
+- Không commit URI này vào GitHub; chỉ lưu trong Render environment variables hoặc file `.env` local.
+
+2. **Push code lên GitHub**
+
+- Render cần đọc repository từ GitHub để build và deploy.
+
+3. **Tạo Web Service mới trên Render**
+
+- Chọn repository này.
+- Root directory: `backend`
+- Build command: `npm run build`
+- Start command: `npm run start`
+
+4. **Khai báo environment variables trên Render**
+
+- `MONGODB_URI` = URI MongoDB Atlas của bạn.
+- `CORS_ORIGIN` = domain frontend hoặc `*` nếu đang test.
+- `PYTHON_BIN` = `python` hoặc `python3` nếu Render nhận dạng khác.
+- `AI_MODEL_DIR` = đường dẫn tới thư mục `DURIAN_RIPENESS_CLASSIFICATION` nếu cần.
+
+5. **Deploy service**
+
+- Render sẽ build TypeScript bằng `npm run build`.
+- Sau khi start thành công, Render cấp cho bạn một URL HTTPS công khai, ví dụ `https://your-service.onrender.com`.
+
+6. **Kiểm tra URL công khai**
+
+- Mở `https://your-service.onrender.com/` để xem JSON trạng thái.
+- Test `POST /predict` bằng file âm thanh mẫu.
+- Test `GET /api/v1/scans?username=...` để chắc chắn MongoDB hoạt động.
+
+7. **Gắn URL vào frontend mobile**
+
+- Set `EXPO_PUBLIC_API_BASE_URL=https://your-service.onrender.com`.
+- Build lại app Expo để bản phát hành dùng API production.
+
+### Phương án thay thế: Railway
+
+Nếu bạn muốn dùng Railway thay Render, quy trình gần như giống hệt:
+
+1. Tạo project Railway từ GitHub repo.
+2. Chọn thư mục `backend`.
+3. Thêm các biến môi trường giống như ở Render.
+4. Deploy và lấy URL HTTPS từ dashboard Railway.
+5. Gắn URL đó vào `EXPO_PUBLIC_API_BASE_URL` rồi build lại app.
+
+### Nếu platform không có Python (lỗi `spawnSync ... ENOENT`)
+
+Nếu khi gọi `/predict` bạn thấy lỗi dạng `spawnSync py ENOENT` hoặc `python: not found`, nghĩa là môi trường chạy Node không có Python/đã cài dependency cần cho inference. Hai lựa chọn an toàn:
+
+- **Dùng Docker (khuyến nghị):** tạo một Docker image chứa cả Node và Python, cài dependencies Python (librosa, joblib, soundfile, v.v.) rồi deploy image lên Render/Railway. Mình đã thêm `Dockerfile` vào repository gốc để bạn có thể dùng ngay.
+
+- **Hoặc** chuyển sang host có Python sẵn (ví dụ một VM hoặc dịch vụ hỗ trợ multiple runtimes) và set `PYTHON_BIN` phù hợp.
+
+Nếu bạn chọn Docker trên Render:
+
+1. Trên Render, khi tạo service chọn **Docker** as the environment (hoặc chỉnh service để dùng Dockerfile ở repo root).
+2. Bật **Auto Deploy** từ GitHub hoặc trigger manual deploy.
+3. Render sẽ build Docker image bằng `Dockerfile` trong repo gốc; image chứa Python và Node và sẽ chạy `node dist/server.js`.
+4. Sau deploy, thử lại `POST /api/v1/predict`.
+
+Mình đã thêm `Dockerfile` và `.dockerignore` vào repository để bạn dùng. Nếu muốn, mình có thể hướng dẫn cụ thể các bước chuyển service sang Docker trên Render.
+
+---
+
 ## 🚀 Deployment Checklist
 
 ### Pre-Deployment
@@ -345,5 +419,20 @@ curl https://your-backend-url.com/api/v1/scans?username=testuser
 14. **Ví dụ file audio (tùy chọn)** — nếu có sample audio muốn dùng để test, upload hoặc cung cấp link.
 
 Gửi cho tôi những mục 1–4 trước, tôi sẽ: cấu hình `.env`, hướng dẫn chi tiết deploy trên nền tảng bạn chọn, và chạy kiểm tra end-to-end.
+
+Có — frontend đã được nối để gọi backend.
+
+Ngắn gọn:
+
+Gọi prediction: aiService.ts gửi FormData tới /predict.
+UI gọi API: RecordScreen.tsx dùng analyzeAudio() (production path).
+Lịch sử: historyService.ts gọi các endpoint /api/v1/scans.
+Lưu ý để gọi thật:
+
+Backend phải chạy và EXPO_PUBLIC_API_BASE_URL (hoặc API_BASE_URL) trong app trỏ tới URL backend.
+Backend cần Python + thư viện model và MONGODB_URI nếu muốn lưu lịch sử.
+Nếu muốn, tôi có thể:
+chạy một kiểm tra end-to-end local (start backend + gửi sample audio), hoặc
+hướng dẫn bạn cấu hình EXPO_PUBLIC_API_BASE_URL và cách test trên thiết bị. Bạn chọn phương án nào?
 
 **Version:** 1.0 | **Last Updated:** May 2026
