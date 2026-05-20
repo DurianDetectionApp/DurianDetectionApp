@@ -435,4 +435,11 @@ Nếu muốn, tôi có thể:
 chạy một kiểm tra end-to-end local (start backend + gửi sample audio), hoặc
 hướng dẫn bạn cấu hình EXPO_PUBLIC_API_BASE_URL và cách test trên thiết bị. Bạn chọn phương án nào?
 
+Bước tiếp theo là mobile:
+
+Set EXPO_PUBLIC_API_BASE_URL=https://duriandetectionappofficial.onrender.com
+Build app bằng EAS
+Test trên máy thật
+Đưa lên Play Store / App Store
+
 **Version:** 1.0 | **Last Updated:** May 2026

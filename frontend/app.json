@@ -16,27 +16,42 @@
       "supportsTablet": false,
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Durly needs microphone access to record durian tap sounds for ripeness analysis."
-      }
+      },
+      "bundleIdentifier": "com.durianofficial.durly",
+      "newArchEnabled": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#6DBE45"
       },
-      "permissions": ["android.permission.RECORD_AUDIO"],
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.durianofficial.durly",
+      "newArchEnabled": true
     },
     "web": {
+      "bundleIdentifier": "com.quangle1027.durlydurian",
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       [
         "expo-av",
         {
+          "package": "com.quangle1027.durlydurian",
           "microphonePermission": "Durly needs mic access to analyze your durian taps."
         }
-      ]
-    ]
+      ],
+      "expo-web-browser"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3a47765e-3a9e-4370-b306-c1723ac0ea25"
+      }
+    }
   }
 }

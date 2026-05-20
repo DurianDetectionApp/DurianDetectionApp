@@ -60,7 +60,7 @@ export function LoginScreen({ navigation }: any) {
           <View style={styles.mascotContainer}>
             <View style={[styles.mascotBg, Shadows.card]}>
               <Image
-                source={require("../../assets/images/durly_idle.png")}
+                source={require("../../assets/images/durly_idle.jpg")}
                 style={styles.mascotImg}
                 resizeMode="contain"
               />
