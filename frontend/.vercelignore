@@ -1,0 +1,15 @@
+.vercelignore
+
+# Exclude local build artifacts and large binaries from Vercel deploy
+
+durly-dev.apk
+_.apk
+_.aab
+.expo
+node_modules/
+.vscode/
+_.keystore
+_.p12
+_.pem
+_.log
+**pycache**/
