@@ -69,15 +69,34 @@ export function ResultScreen() {
   }
 
   const { ripeness, confidence, variety, texture, description } = result;
+  // Normalize backend ripeness strings that may be 'unripe' or 'overripe'
+  const normalizeRipeness = (r: any, c: number) => {
+    if (!r || typeof r !== "string") return "undetected" as RipenessType;
+    const s = r.trim().toLowerCase();
+    if (s === "ripe") return "ripe" as RipenessType;
+    if (s === "unripe" || s === "under_ripe")
+      return "under_ripe" as RipenessType;
+    if (s === "overripe" || s === "over_ripe")
+      return "over_ripe" as RipenessType;
+    return "undetected" as RipenessType;
+  };
+
+  const resolvedRipeness = normalizeRipeness(ripeness, confidence);
   const confidencePct = Math.round(confidence * 100);
-  const badgeColor = RipenessColors[ripeness as RipenessType];
+  const badgeColor = RipenessColors[resolvedRipeness as RipenessType];
   const mascotImg =
-    RESULT_IMAGES[ripeness as RipenessType] || RESULT_IMAGES.undetected;
+    RESULT_IMAGES[resolvedRipeness as RipenessType] || RESULT_IMAGES.undetected;
+
+  // Display label: if ripe with very high confidence, highlight as "Perfectly Ripe"
+  const displayLabel =
+    resolvedRipeness === "ripe" && confidence >= 0.95
+      ? "Perfectly Ripe"
+      : RipenessLabels[resolvedRipeness as RipenessType];
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `🌵 Durly says: ${variety} is ${RipenessLabels[ripeness as RipenessType]}! (${confidencePct}% confidence)\n\nCheck it out with the Durly app!`,
+        message: `🌵 Durly says: ${variety} is ${displayLabel}! (${confidencePct}% confidence)\n\nCheck it out with the Durly app!`,
         title: "My Durian Ripeness Result",
       });
     } catch {}
@@ -118,7 +137,7 @@ export function ResultScreen() {
             />
           </View>
           <Text style={[styles.ripenessLabel, { color: badgeColor }]}>
-            {RipenessLabels[ripeness as RipenessType]}!
+            {displayLabel}!
           </Text>
           <Text style={styles.ripenessDesc}>{description}</Text>
         </View>

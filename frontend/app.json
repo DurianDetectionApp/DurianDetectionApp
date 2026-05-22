@@ -15,7 +15,8 @@
     "ios": {
       "supportsTablet": false,
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Durly needs microphone access to record durian tap sounds for ripeness analysis."
+        "NSMicrophoneUsageDescription": "Durly needs microphone access to record durian tap sounds for ripeness analysis.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.durianofficial.durly",
       "newArchEnabled": true
