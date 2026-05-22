@@ -58,6 +58,7 @@ export async function inferAudioWithModel(
         headers: {
           "content-type": mimeType || "application/octet-stream",
           "x-filename": originalName || "audio",
+          ...(env.inferenceApiKey ? { "x-api-key": env.inferenceApiKey } : {}),
         },
         body: audioBuffer,
         signal: controller.signal as any,

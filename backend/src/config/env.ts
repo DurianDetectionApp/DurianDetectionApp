@@ -21,6 +21,8 @@ export const env = {
   // Optional HTTP URL for an external inference service (e.g. FastAPI). If set,
   // backend will POST audio bytes to this URL instead of spawning Python.
   aiModelHttpUrl: process.env.AI_MODEL_HTTP_URL ?? undefined,
+  // Optional API key to include when calling the external inference service
+  inferenceApiKey: process.env.INFERENCE_API_KEY ?? undefined,
   dataDir: path.join(backendRoot, "data"),
   predictionThreshold: Number(process.env.PREDICTION_THRESHOLD ?? 0.55),
 };
