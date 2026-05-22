@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createScanHistorySchema = z.object({
   username: z.string().min(1),
   userId: z.string().optional(),
-  ripeness: z.enum(["ripe", "under_ripe", "over_ripe", "undetected"]),
+  ripeness: z.enum(["ripe", "unripe", "undetected"]),
   confidence: z.number().min(0).max(1),
   variety: z.string().min(1),
   texture: z.string().min(1),

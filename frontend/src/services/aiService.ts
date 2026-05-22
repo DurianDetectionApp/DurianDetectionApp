@@ -25,8 +25,14 @@ const DURIAN_VARIETIES = [
 ];
 const TEXTURES: Record<RipenessType, string[]> = {
   ripe: ["Buttery Smooth", "Creamy Rich", "Silky Dense"],
-  under_ripe: ["Firm & Dry", "Slightly Bitter", "Dense & Compact"],
-  over_ripe: ["Overly Sweet", "Soft & Mushy", "Strong Odor"],
+  unripe: [
+    "Firm & Dry",
+    "Slightly Bitter",
+    "Dense & Compact",
+    "Overly Sweet",
+    "Soft & Mushy",
+    "Strong Odor",
+  ],
   undetected: ["Unknown", "Inconclusive"],
 };
 const DESCRIPTIONS: Record<RipenessType, string[]> = {
@@ -35,12 +41,10 @@ const DESCRIPTIONS: Record<RipenessType, string[]> = {
     "Perfect ripeness detected — rich, complex flavor awaits!",
     "Optimal eating window. The flesh is at its creamiest!",
   ],
-  under_ripe: [
+  unripe: [
     "This durian needs a few more days. Patience pays off! ⏳",
     "Not quite there yet — let it rest in a cool, dry place.",
     "Give it 2–3 more days for best flavor development.",
-  ],
-  over_ripe: [
     "Better eat it now before it ferments further! 🏃",
     "Over-ripe but still edible — great for cooking!",
     "The window has passed slightly. Consume today if possible.",
@@ -63,8 +67,8 @@ export async function mockAnalyzeAudio(_audioUri: string): Promise<AIResult> {
     "ripe",
     "ripe",
     "ripe",
-    "under_ripe",
-    "over_ripe",
+    "unripe",
+    "unripe",
   ];
   const ripeness =
     ripenessOptions[Math.floor(Math.random() * ripenessOptions.length)];

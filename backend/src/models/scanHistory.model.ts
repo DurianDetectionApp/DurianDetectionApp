@@ -20,7 +20,7 @@ const scanHistorySchema = new Schema<ScanHistoryDocument>(
     ripeness: {
       type: String,
       required: true,
-      enum: ["ripe", "under_ripe", "over_ripe", "undetected"],
+      enum: ["ripe", "unripe", "undetected"],
     },
     confidence: { type: Number, required: true, min: 0, max: 1 },
     variety: { type: String, required: true },

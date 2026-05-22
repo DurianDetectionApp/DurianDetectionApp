@@ -19,8 +19,7 @@ import { Typography, Spacing, Radii, Shadows } from "../theme/typography";
 
 const RESULT_IMAGES = {
   ripe: require("../../assets/images/durly_done.jpg"),
-  under_ripe: require("../../assets/images/durly_idle.jpg"),
-  over_ripe: require("../../assets/images/durly_error.jpg"),
+  unripe: require("../../assets/images/durly_idle.jpg"),
   undetected: require("../../assets/images/durly_idle.jpg"),
 };
 
@@ -69,15 +68,18 @@ export function ResultScreen() {
   }
 
   const { ripeness, confidence, variety, texture, description } = result;
-  // Normalize backend ripeness strings that may be 'unripe' or 'overripe'
+  // Normalize backend ripeness strings and map variations to 'unripe'
   const normalizeRipeness = (r: any, c: number) => {
     if (!r || typeof r !== "string") return "undetected" as RipenessType;
     const s = r.trim().toLowerCase();
     if (s === "ripe") return "ripe" as RipenessType;
-    if (s === "unripe" || s === "under_ripe")
-      return "under_ripe" as RipenessType;
-    if (s === "overripe" || s === "over_ripe")
-      return "over_ripe" as RipenessType;
+    if (
+      s === "unripe" ||
+      s === "under_ripe" ||
+      s === "overripe" ||
+      s === "over_ripe"
+    )
+      return "unripe" as RipenessType;
     return "undetected" as RipenessType;
   };
 

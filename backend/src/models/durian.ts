@@ -1,4 +1,4 @@
-export type RipenessType = "ripe" | "under_ripe" | "over_ripe" | "undetected";
+export type RipenessType = "ripe" | "unripe" | "undetected";
 
 export interface DurianAnalysisResult {
   ripeness: RipenessType;

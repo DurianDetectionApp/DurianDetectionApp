@@ -1,28 +1,48 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../../theme/useTheme';
-import { RipenessType, RipenessColors, RipenessLabels } from '../../theme/colors';
-import { Typography, Radii, Spacing } from '../../theme/typography';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useTheme } from "../../theme/useTheme";
+import {
+  RipenessType,
+  RipenessColors,
+  RipenessLabels,
+} from "../../theme/colors";
+import { Typography, Radii, Spacing } from "../../theme/typography";
 
 interface RipenessBadgeProps {
   ripeness: RipenessType;
-  size?: 'sm' | 'md';
+  size?: "sm" | "md";
 }
 
-export function RipenessBadge({ ripeness, size = 'md' }: RipenessBadgeProps) {
+export function RipenessBadge({ ripeness, size = "md" }: RipenessBadgeProps) {
   const { isDark } = useTheme();
   const baseColor = RipenessColors[ripeness];
-  const bgColor = baseColor + (isDark ? '44' : '22');
-  const textColor = isDark 
-    ? (ripeness === 'over_ripe' ? '#FFE066' : ripeness === 'undetected' ? '#CCC' : baseColor)
-    : (ripeness === 'over_ripe' ? '#7A6000' : ripeness === 'undetected' ? '#555' : baseColor);
-    
+  const bgColor = baseColor + (isDark ? "44" : "22");
+  const textColor = isDark
+    ? ripeness === "unripe"
+      ? "#FFE066"
+      : ripeness === "undetected"
+        ? "#CCC"
+        : baseColor
+    : ripeness === "unripe"
+      ? "#7A6000"
+      : ripeness === "undetected"
+        ? "#555"
+        : baseColor;
+
   const label = RipenessLabels[ripeness];
-  const isSmall = size === 'sm';
+  const isSmall = size === "sm";
 
   return (
-    <View style={[styles.badge, { backgroundColor: bgColor, borderColor: baseColor + '44' }, isSmall && styles.badgeSm]}>
-      <Text style={[styles.text, { color: textColor }, isSmall && styles.textSm]}>
+    <View
+      style={[
+        styles.badge,
+        { backgroundColor: bgColor, borderColor: baseColor + "44" },
+        isSmall && styles.badgeSm,
+      ]}
+    >
+      <Text
+        style={[styles.text, { color: textColor }, isSmall && styles.textSm]}
+      >
         {label}
       </Text>
     </View>
@@ -35,7 +55,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
     borderRadius: Radii.md,
     borderWidth: 1,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   badgeSm: {
     paddingHorizontal: Spacing.sm,
