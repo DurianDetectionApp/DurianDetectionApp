@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import type { DurianAnalysisResult, RipenessType } from "../models/durian";
+import { env } from "../config/env";
 
 const DURIAN_VARIETIES = [
   "Musang King",
@@ -52,8 +53,13 @@ export function normalizeRipeness(
   label: string,
   confidence: number,
 ): RipenessType {
-  if (confidence < 0.55) {
-    return "undetected";
+  const threshold = Number.isFinite(env.predictionThreshold)
+    ? env.predictionThreshold
+    : 0.9;
+
+  // If confidence is below threshold or label is missing/invalid, treat as unripe
+  if (!label || typeof label !== "string" || confidence < threshold) {
+    return "unripe";
   }
 
   const normalized = label.trim().toLowerCase();
@@ -65,10 +71,12 @@ export function normalizeRipeness(
     normalized === "under_ripe" ||
     normalized === "overripe" ||
     normalized === "over_ripe"
-  )
+  ) {
     return "unripe";
+  }
 
-  return "undetected";
+  // Unknown labels → conservative unripe
+  return "unripe";
 }
 
 export function buildDurianAnalysisResult(params: {
