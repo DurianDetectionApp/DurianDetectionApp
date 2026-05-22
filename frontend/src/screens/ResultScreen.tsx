@@ -87,7 +87,8 @@ export function ResultScreen() {
     ? Math.round(confidence * 100)
     : 0;
   const badgeColor = RipenessColors[resolvedRipeness as RipenessType];
-  const mascotImg = RESULT_IMAGES[resolvedRipeness as RipenessType];
+  const mascotImg =
+    (RESULT_IMAGES as any)[resolvedRipeness] || RESULT_IMAGES.unripe;
 
   const displayLabel = RipenessLabels[resolvedRipeness as RipenessType];
 

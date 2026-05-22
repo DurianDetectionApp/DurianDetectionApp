@@ -14,7 +14,7 @@ function normalizeRipeness(r) {
 }
 
 const RipenessLabels = {
-  ripe: "Perfectly Ripe",
+  ripe: "Ripe",
   unripe: "Unripe",
   undetected: "Undetected",
 };
@@ -30,7 +30,7 @@ function displayFor(result) {
   const resolved = normalizeRipeness(ripeness);
   const displayLabel =
     resolved === "ripe" && confidence >= 0.95
-      ? "Perfectly Ripe"
+      ? "Ripe"
       : RipenessLabels[resolved];
   const badgeColor = RipenessColors[resolved] || RipenessColors.undetected;
   return {
