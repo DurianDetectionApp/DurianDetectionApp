@@ -53,6 +53,7 @@ export async function inferAudioWithModel(
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     try {
+      // TypeScript DOM typings expect BodyInit; cast Buffer to any to satisfy compiler
       const resp = await fetch(env.aiModelHttpUrl, {
         method: "POST",
         headers: {
@@ -60,7 +61,8 @@ export async function inferAudioWithModel(
           "x-filename": originalName || "audio",
           ...(env.inferenceApiKey ? { "x-api-key": env.inferenceApiKey } : {}),
         },
-        body: audioBuffer,
+        // `audioBuffer` is a Node Buffer — cast to any so tsc in Docker build doesn't complain
+        body: audioBuffer as unknown as any,
         signal: controller.signal as any,
       });
       clearTimeout(timeout);
