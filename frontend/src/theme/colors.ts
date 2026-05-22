@@ -56,7 +56,7 @@ export const RipenessColors: Record<RipenessType, string> = {
 };
 
 export const RipenessLabels: Record<RipenessType, string> = {
-  ripe: "Perfectly Ripe",
+  ripe: "Ripe",
   unripe: "Unripe",
   undetected: "Undetected",
 };
