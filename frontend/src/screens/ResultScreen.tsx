@@ -66,9 +66,15 @@ export function ResultScreen() {
     );
   }
 
-  const { ripeness, confidence, variety, texture, description } = result;
+  const {
+    ripeness,
+    confidence = 0,
+    variety = "Unknown",
+    texture = "-",
+    description = "",
+  } = result as any;
   // Normalize backend ripeness strings so the UI only shows ripe or unripe.
-  const normalizeRipeness = (r: any) => {
+  const normalizeRipeness = (r: any, confidence?: number) => {
     if (!r || typeof r !== "string") return "unripe" as RipenessType;
     const s = r.trim().toLowerCase();
     if (s === "ripe") return "ripe" as RipenessType;
@@ -77,7 +83,9 @@ export function ResultScreen() {
   };
 
   const resolvedRipeness = normalizeRipeness(ripeness, confidence);
-  const confidencePct = Math.round(confidence * 100);
+  const confidencePct = Number.isFinite(confidence)
+    ? Math.round(confidence * 100)
+    : 0;
   const badgeColor = RipenessColors[resolvedRipeness as RipenessType];
   const mascotImg = RESULT_IMAGES[resolvedRipeness as RipenessType];
 
