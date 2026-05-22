@@ -11,6 +11,6 @@ function metaController(_req, res) {
             "/api/v1/predict",
             "/api/v1/meta",
         ],
-        supportedRipeness: ["ripe", "under_ripe", "over_ripe", "undetected"],
+        supportedRipeness: ["ripe", "unripe", "undetected"],
     });
 }

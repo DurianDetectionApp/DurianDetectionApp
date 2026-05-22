@@ -15,8 +15,14 @@ const DURIAN_VARIETIES = [
 ];
 const TEXTURES = {
     ripe: ["Buttery Smooth", "Creamy Rich", "Silky Dense"],
-    under_ripe: ["Firm & Dry", "Slightly Bitter", "Dense & Compact"],
-    over_ripe: ["Overly Sweet", "Soft & Mushy", "Strong Odor"],
+    unripe: [
+        "Firm & Dry",
+        "Slightly Bitter",
+        "Dense & Compact",
+        "Overly Sweet",
+        "Soft & Mushy",
+        "Strong Odor",
+    ],
     undetected: ["Unknown", "Inconclusive"],
 };
 const DESCRIPTIONS = {
@@ -25,12 +31,10 @@ const DESCRIPTIONS = {
         "Perfect ripeness detected — rich, complex flavor awaits!",
         "Optimal eating window. The flesh is at its creamiest!",
     ],
-    under_ripe: [
+    unripe: [
         "This durian needs a few more days. Patience pays off!",
         "Not quite there yet — let it rest in a cool, dry place.",
         "Give it 2–3 more days for best flavor development.",
-    ],
-    over_ripe: [
         "Better eat it now before it ferments further!",
         "Over-ripe but still edible — great for cooking!",
         "The window has passed slightly. Consume today if possible.",
@@ -52,10 +56,12 @@ function normalizeRipeness(label, confidence) {
     const normalized = label.trim().toLowerCase();
     if (normalized === "ripe")
         return "ripe";
-    if (normalized === "unripe" || normalized === "under_ripe")
-        return "under_ripe";
-    if (normalized === "overripe" || normalized === "over_ripe")
-        return "over_ripe";
+    // Map both under/over-ripe and 'unripe' to a single 'unripe' class
+    if (normalized === "unripe" ||
+        normalized === "under_ripe" ||
+        normalized === "overripe" ||
+        normalized === "over_ripe")
+        return "unripe";
     return "undetected";
 }
 function buildDurianAnalysisResult(params) {

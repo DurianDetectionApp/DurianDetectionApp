@@ -5,6 +5,7 @@ const express_1 = require("express");
 const health_controller_1 = require("../controller/health.controller");
 const meta_controller_1 = require("../controller/meta.controller");
 const predict_controller_1 = require("../controller/predict.controller");
+const debug_controller_1 = require("../controller/debug.controller");
 const scanHistory_controller_1 = require("../controller/scanHistory.controller");
 const upload_1 = require("../middleware/upload");
 exports.router = (0, express_1.Router)();
@@ -13,6 +14,8 @@ exports.router.get("/api/v1/health", health_controller_1.healthController);
 exports.router.get("/api/v1/meta", meta_controller_1.metaController);
 exports.router.post("/predict", upload_1.uploadAudio.single("audio"), predict_controller_1.predictController);
 exports.router.post("/api/v1/predict", upload_1.uploadAudio.single("audio"), predict_controller_1.predictController);
+// Temporary debug endpoint to inspect python runtime inside container
+exports.router.get("/api/v1/debug/runtime", debug_controller_1.runtimeDebugController);
 exports.router.post("/api/v1/scans", scanHistory_controller_1.createScanHistoryController);
 exports.router.get("/api/v1/scans", scanHistory_controller_1.listUserScanHistoryController);
 exports.router.get("/api/v1/scans/global", scanHistory_controller_1.listGlobalScanHistoryController);
