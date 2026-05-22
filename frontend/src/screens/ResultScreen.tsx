@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Share2, Star, Clock, RefreshCw } from "lucide-react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { AppHeader } from "../components/shared/AppHeader";
+import { AppHeader } from "../components/shared";
 import { useRecordStore, AIResult } from "../store/recordStore";
 import { useTheme } from "../theme/useTheme";
 import { RipenessType, RipenessColors, RipenessLabels } from "../theme/colors";
