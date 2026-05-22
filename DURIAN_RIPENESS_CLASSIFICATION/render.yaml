@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: durian-model
+    env: docker
+    repo: DurianDetectionApp/DurianDetectionApp
+    branch: latestmain
+    dockerfilePath: DURIAN_RIPENESS_CLASSIFICATION/Dockerfile
+    rootDirectory: DURIAN_RIPENESS_CLASSIFICATION
+    plan: free
+    autoDeploy: true
+    region: oregon
+    envVars:
+      - key: INFERENCE_API_KEY
+        isRequired: false
+        isSecret: true
+      - key: PREDICTION_THRESHOLD
+        value: "0.9"
+      - key: PORT
+        value: "8000"

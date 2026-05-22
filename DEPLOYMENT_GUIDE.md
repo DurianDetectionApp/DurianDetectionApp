@@ -229,6 +229,26 @@ File liên quan trong repo:
 
 Hết.# Durian Ripeness Detection App – Deployment Guide
 
+---
+
+## Auto-deploy model service using `render.yaml`
+
+Bạn đã xác nhận rằng file model (`models/random_forest.pkl`) tồn tại trong `DURIAN_RIPENESS_CLASSIFICATION/models`.
+
+Một manifest `DURIAN_RIPENESS_CLASSIFICATION/render.yaml` đã được thêm vào repo. Khi bạn kết nối repo này với Render và tạo một Deploy from Repo, Render sẽ đọc `render.yaml` và tạo một Web Service `durian-model` sử dụng `DURIAN_RIPENESS_CLASSIFICATION/Dockerfile`.
+
+Steps nhanh:
+
+1. Push các thay đổi lên GitHub (đảm bảo `render.yaml` và `Dockerfile` có trong remote).
+2. Trên Render: **New** → **Deploy from Repo** → chọn `DurianDetectionApp/DurianDetectionApp`.
+3. Render sẽ tự tạo service theo `render.yaml`. Mở service trong dashboard để thiết lập secret `INFERENCE_API_KEY` (nếu muốn) và chỉnh `PREDICTION_THRESHOLD`.
+4. Khi deploy hoàn tất, copy URL service và đặt `AI_MODEL_HTTP_URL` trong backend environment (ví dụ `https://durian-model.onrender.com/infer`).
+
+Ghi chú:
+
+- Nếu muốn deploy thủ công thay vì dùng `render.yaml`, hãy tạo Web Service mới và chọn Docker, đặt `Root Directory` là `DURIAN_RIPENESS_CLASSIFICATION`.
+- Nếu model file lớn hoặc bạn không muốn commit model vào Git, upload model vào cloud storage (S3) và thay đổi code để tải model từ S3 khi khởi động.
+
 ## 📋 Project Overview
 
 **Objective:** Build a complete backend for a React Native Expo app that records durian tap sounds and uses an AI model to predict ripeness.
