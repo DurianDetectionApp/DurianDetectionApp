@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 import joblib
 import numpy as np
@@ -26,15 +26,18 @@ async def startup_event():
 
 
 @app.post("/infer")
-async def infer(file: UploadFile = File(...)):
+async def infer(request: Request):
+    # Accept raw binary body (backend will POST audio bytes with correct content-type)
     if model is None:
         raise HTTPException(status_code=500, detail="Model not loaded")
-
-    # save uploaded file to temp and reuse existing extract_features
     try:
-        contents = await file.read()
+        body = await request.body()
+        if not body:
+            raise HTTPException(status_code=400, detail="Empty body")
+
+        # write to temp file
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-            tmp.write(contents)
+            tmp.write(body)
             tmp_path = tmp.name
 
         X = extract_features(tmp_path)
@@ -49,6 +52,8 @@ async def infer(file: UploadFile = File(...)):
         }
 
         return JSONResponse(content=payload)
+    except HTTPException:
+        raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
