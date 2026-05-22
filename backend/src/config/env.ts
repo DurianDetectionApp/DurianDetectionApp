@@ -18,6 +18,9 @@ export const env = {
   aiModelDir: process.env.AI_MODEL_DIR
     ? path.resolve(process.env.AI_MODEL_DIR)
     : path.join(workspaceRoot, "DURIAN_RIPENESS_CLASSIFICATION"),
+  // Optional HTTP URL for an external inference service (e.g. FastAPI). If set,
+  // backend will POST audio bytes to this URL instead of spawning Python.
+  aiModelHttpUrl: process.env.AI_MODEL_HTTP_URL ?? undefined,
   dataDir: path.join(backendRoot, "data"),
   predictionThreshold: Number(process.env.PREDICTION_THRESHOLD ?? 0.55),
 };

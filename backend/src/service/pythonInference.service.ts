@@ -48,6 +48,36 @@ export async function inferAudioWithModel(
   originalName: string,
   mimeType: string,
 ) {
+  // If an external HTTP inference service is configured, POST the audio bytes
+  if (env.aiModelHttpUrl) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    try {
+      const resp = await fetch(env.aiModelHttpUrl, {
+        method: "POST",
+        headers: {
+          "content-type": mimeType || "application/octet-stream",
+          "x-filename": originalName || "audio",
+        },
+        body: audioBuffer,
+        signal: controller.signal as any,
+      });
+      clearTimeout(timeout);
+      if (!resp.ok) {
+        throw new Error(`Inference service HTTP ${resp.status}`);
+      }
+      const json = await resp.json();
+      return json as PythonInferenceResult;
+    } catch (err) {
+      clearTimeout(timeout);
+      // fallback to local python execution below
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[python-infer] HTTP inference failed: ${(err as Error).message}`,
+      );
+    }
+  }
+
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "durly-"));
   const extension = path.extname(originalName) || guessExtension(mimeType);
   const audioPath = path.join(tempDir, `audio${extension}`);

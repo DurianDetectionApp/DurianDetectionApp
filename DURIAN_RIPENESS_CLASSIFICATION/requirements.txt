@@ -3,3 +3,5 @@ librosa
 numpy
 scikit-learn
 soundfile
+fastapi
+uvicorn[standard]
