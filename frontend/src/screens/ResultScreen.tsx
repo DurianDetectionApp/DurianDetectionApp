@@ -20,7 +20,6 @@ import { Typography, Spacing, Radii, Shadows } from "../theme/typography";
 const RESULT_IMAGES = {
   ripe: require("../../assets/images/durly_done.jpg"),
   unripe: require("../../assets/images/durly_idle.jpg"),
-  undetected: require("../../assets/images/durly_idle.jpg"),
 };
 
 const MOCK_REVIEWS = [
@@ -68,32 +67,21 @@ export function ResultScreen() {
   }
 
   const { ripeness, confidence, variety, texture, description } = result;
-  // Normalize backend ripeness strings and map variations to 'unripe'
-  const normalizeRipeness = (r: any, c: number) => {
-    if (!r || typeof r !== "string") return "undetected" as RipenessType;
+  // Normalize backend ripeness strings so the UI only shows ripe or unripe.
+  const normalizeRipeness = (r: any) => {
+    if (!r || typeof r !== "string") return "unripe" as RipenessType;
     const s = r.trim().toLowerCase();
     if (s === "ripe") return "ripe" as RipenessType;
-    if (
-      s === "unripe" ||
-      s === "under_ripe" ||
-      s === "overripe" ||
-      s === "over_ripe"
-    )
-      return "unripe" as RipenessType;
-    return "undetected" as RipenessType;
+    if (s === "unripe" || s === "under_ripe") return "unripe" as RipenessType;
+    return "unripe" as RipenessType;
   };
 
   const resolvedRipeness = normalizeRipeness(ripeness, confidence);
   const confidencePct = Math.round(confidence * 100);
   const badgeColor = RipenessColors[resolvedRipeness as RipenessType];
-  const mascotImg =
-    RESULT_IMAGES[resolvedRipeness as RipenessType] || RESULT_IMAGES.undetected;
+  const mascotImg = RESULT_IMAGES[resolvedRipeness as RipenessType];
 
-  // Display label: if ripe with very high confidence, highlight as "Perfectly Ripe"
-  const displayLabel =
-    resolvedRipeness === "ripe" && confidence >= 0.95
-      ? "Perfectly Ripe"
-      : RipenessLabels[resolvedRipeness as RipenessType];
+  const displayLabel = RipenessLabels[resolvedRipeness as RipenessType];
 
   const handleShare = async () => {
     try {

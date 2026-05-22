@@ -24,5 +24,5 @@ export const env = {
   // Optional API key to include when calling the external inference service
   inferenceApiKey: process.env.INFERENCE_API_KEY ?? undefined,
   dataDir: path.join(backendRoot, "data"),
-  predictionThreshold: Number(process.env.PREDICTION_THRESHOLD ?? 0.55),
+  predictionThreshold: Number(process.env.PREDICTION_THRESHOLD ?? 0.9),
 };

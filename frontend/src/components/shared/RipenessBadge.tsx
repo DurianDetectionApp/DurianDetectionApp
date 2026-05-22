@@ -20,14 +20,10 @@ export function RipenessBadge({ ripeness, size = "md" }: RipenessBadgeProps) {
   const textColor = isDark
     ? ripeness === "unripe"
       ? "#FFE066"
-      : ripeness === "undetected"
-        ? "#CCC"
-        : baseColor
+      : baseColor
     : ripeness === "unripe"
       ? "#7A6000"
-      : ripeness === "undetected"
-        ? "#555"
-        : baseColor;
+      : baseColor;
 
   const label = RipenessLabels[ripeness];
   const isSmall = size === "sm";

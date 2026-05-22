@@ -45,9 +45,8 @@ const DESCRIPTIONS: Record<RipenessType, string[]> = {
     "This durian needs a few more days. Patience pays off! ⏳",
     "Not quite there yet — let it rest in a cool, dry place.",
     "Give it 2–3 more days for best flavor development.",
-    "Better eat it now before it ferments further! 🏃",
-    "Over-ripe but still edible — great for cooking!",
     "The window has passed slightly. Consume today if possible.",
+    "It is still firm and needs more time before eating.",
   ],
   undetected: [
     "Could not determine ripeness. Try recording again closer to the stem. 🤔",
@@ -120,8 +119,12 @@ export async function analyzeAudio(audioUri: string): Promise<AIResult> {
     return await response.json();
   } catch {
     clearTimeout(timeout);
-    // Fallback to mock if API unavailable
-    console.warn("[aiService] API unavailable, using mock fallback");
-    return mockAnalyzeAudio(audioUri);
+    // Avoid fabricating predictions in production. Use mock only during local development.
+    if (__DEV__) {
+      console.warn("[aiService] API unavailable, using mock fallback");
+      return mockAnalyzeAudio(audioUri);
+    }
+
+    throw new Error("Analysis service unavailable. Please try again.");
   }
 }
