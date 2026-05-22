@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.normalizeRipeness = normalizeRipeness;
 exports.buildDurianAnalysisResult = buildDurianAnalysisResult;
 const crypto_1 = __importDefault(require("crypto"));
+const env_1 = require("../config/env");
 const DURIAN_VARIETIES = [
     "Musang King",
     "D24 Sultan",
@@ -50,8 +51,12 @@ function pickStable(seed, values) {
     return values[index];
 }
 function normalizeRipeness(label, confidence) {
-    if (confidence < 0.55) {
-        return "undetected";
+    const threshold = Number.isFinite(env_1.env.predictionThreshold)
+        ? env_1.env.predictionThreshold
+        : 0.9;
+    // If confidence is below threshold or label is missing/invalid, treat as unripe
+    if (!label || typeof label !== "string" || confidence < threshold) {
+        return "unripe";
     }
     const normalized = label.trim().toLowerCase();
     if (normalized === "ripe")
@@ -60,9 +65,11 @@ function normalizeRipeness(label, confidence) {
     if (normalized === "unripe" ||
         normalized === "under_ripe" ||
         normalized === "overripe" ||
-        normalized === "over_ripe")
+        normalized === "over_ripe") {
         return "unripe";
-    return "undetected";
+    }
+    // Unknown labels → conservative unripe
+    return "unripe";
 }
 function buildDurianAnalysisResult(params) {
     const ripeness = normalizeRipeness(params.label, params.confidence);
