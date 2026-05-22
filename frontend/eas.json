@@ -1,4 +1,23 @@
 {
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "workflow": "managed"
+      }
+    }
+  }
+}
+{
   "cli": {
     "version": ">= 19.0.1",
     "appVersionSource": "remote"

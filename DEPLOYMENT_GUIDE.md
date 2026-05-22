@@ -1,4 +1,233 @@
-# Durian Ripeness Detection App – Deployment Guide
+## 📋 Project Overview
+
+**Objective:** Build a complete backend for a React Native Expo app that records durian tap sounds and uses an AI model to predict ripeness.
+
+## 📦 Required Information to Proceed
+
+### 1. **MongoDB Connection String (REQUIRED)**
+
+### 2. **Deployment Platform Choice**
+
+### 3. **Python Runtime Environment**
+
+### 4. **Frontend API Base URL (REQUIRED for Production)**
+
+### 5. **Optional: CORS Origin (for Security)**
+
+### 6. **Optional: Prediction Threshold**
+
+### 7. **Deployment Checklist**
+
+### 8. **Verify Deployment**
+
+### 9. **Troubleshooting**
+
+### 10. **Next Steps**
+
+### 11. **Files Summary**
+
+### 12. **Status of Current Connections**
+
+### 13. **Contact & Next Steps**
+
+## Frontend File Structure (Proposed)
+
+Đây là cấu trúc frontend đề xuất để tổ chức code rõ ràng trước khi trình bày hoặc triển khai. Bạn không cần di chuyển mọi file ngay — đây là bản tham khảo để sắp xếp và refactor dần.
+
+```
+frontend/
+├── App.tsx
+├── app.json
+├── package.json
+├── src/
+│   ├── components/
+│   │   ├── shared/          # Các component dùng chung (Header, Buttons, Badges)
+│   │   │   ├── AppHeader.tsx
+│   │   │   ├── RipenessBadge.tsx
+│   │   │   └── index.ts     # re-exports
+│   │   ├── audio/           # Components liên quan audio (recorder, waveform)
+│   │   │   ├── AudioRecorder.tsx
+│   │   │   ├── AudioWaveform.tsx
+│   │   │   └── index.ts
+│   │   └── mascot/          # Mascot components
+│   │       ├── DurlyMascot.tsx
+│   │       └── index.ts
+│   ├── screens/            # Screen-level pages (Record, Result, History...)
+│   │   ├── RecordScreen.tsx
+│   │   ├── ResultScreen.tsx
+│   │   └── HistoryScreen.tsx
+│   ├── navigation/
+│   │   └── RootNavigator.tsx
+│   ├── services/           # API and audio helpers
+│   │   ├── aiService.ts
+│   │   ├── audioService.ts
+│   │   └── historyService.ts
+│   ├── store/              # Zustand stores
+│   │   ├── recordStore.ts
+│   │   ├── historyStore.ts
+│   │   └── index.ts        # re-exports
+│   ├── hooks/              # Custom hooks
+│   │   └── useTheme.ts
+│   ├── utils/              # Helpers, types
+│   │   └── fmt.ts
+│   ├── theme/
+│   │   ├── colors.ts
+│   │   └── typography.ts
+│   └── assets/
+│       ├── images/
+│       └── audio-samples/
+└── tsconfig.json
+```
+
+Gợi ý di chuyển từng bước:
+
+- Bước 1: Tạo các thư mục `components/shared`, `components/audio`, `components/mascot` và thêm `index.ts` re-export (như đã tạo trong repo).
+- Bước 2: Cập nhật một vài import trong `screens` để dùng re-exports (ví dụ `import { AppHeader } from '../components/shared'`).
+- Bước 3: Tạo `src/components/index.ts` và `src/store/index.ts` để gom các nhóm.
+- Bước 4: Chạy `npm run build:web` để đảm bảo không có lỗi import/trình biên dịch.
+
+Nếu bạn muốn, tôi có thể tự động thực hiện di chuyển từng bước và cập nhật import — trả lời "tiếp tục" để tôi áp patch tự động (tôi sẽ commit từng bước để dễ rollback).
+**Giới thiệu**
+
+- Mục tiêu: Hướng dẫn triển khai toàn bộ ứng dụng "Durly" (Frontend, Backend, Model inference service) để trình bày trước hội đồng.
+- Nội dung: kiến trúc, yêu cầu, cài local, Docker & deploy (Render, Vercel), biến môi trường, checklist demo, và khắc phục sự cố.
+
+**Kiến trúc tổng quan**
+
+- Frontend: Expo React Native (Web build) — phục vụ UI cho người dùng; khuyến nghị deploy tĩnh trên Vercel.
+- Backend: Node.js + Express + TypeScript — API xử lý upload âm thanh, gọi inference service qua HTTP và lưu lịch sử.
+- Model service: Python FastAPI (uvicorn) — service inference giữ mô hình (joblib / scikit-learn) chạy độc lập, được gọi bởi backend qua `AI_MODEL_HTTP_URL`.
+- Cơ sở dữ liệu: MongoDB (hoặc Atlas) để lưu lịch sử (nếu cần).
+
+**Yêu cầu trước khi triển khai**
+
+- Cài đặt local (phát triển): Node 18+, npm, Python 3.10+, virtualenv, Git.
+- Docker (khi deploy trên Render bằng Docker image).
+- Tài khoản Render (hoặc Docker registry) và Vercel cho frontend.
+
+**Biến môi trường quan trọng**
+
+- `AI_MODEL_HTTP_URL` — URL của model inference service (ví dụ: `https://model.example.com/infer`). Bắt buộc với cấu hình hiện tại.
+- `INFERENCE_API_KEY` — (tuỳ chọn) khoá API để bảo vệ inference endpoint.
+- `PREDICTION_THRESHOLD` — ngưỡng confidence (0..1) để chấp nhận kết quả; mặc định `0.9`.
+- `MONGODB_URI` — chuỗi kết nối MongoDB.
+- Backend server: `PORT`, `HOST`.
+- Frontend: `EXPO_PUBLIC_API_BASE_URL` — URL của backend API (ví dụ `https://api.example.com`).
+
+**Cài và chạy local (developer)**
+
+1. Model service (Python)
+   - Tạo virtualenv và cài dependency: - `python -m venv .venv` - Windows: `.
+.venv\\Scripts\\Activate.ps1` - `pip install -r DURIAN_RIPENESS_CLASSIFICATION/requirements.txt`
+   - Chạy local: `python DURIAN_RIPENESS_CLASSIFICATION/api/server.py` hoặc `uvicorn api.server:app --host 0.0.0.0 --port 8000` trong thư mục `DURIAN_RIPENESS_CLASSIFICATION/api`.
+   - Kiểm tra health: `GET http://localhost:8000/healthz` (trả về model_loaded).
+
+2. Backend (Node/TypeScript)
+   - Cài dependency: `cd backend && npm ci`
+   - Thiết đặt biến môi trường (ví dụ dùng `.env` cục bộ):
+     - `AI_MODEL_HTTP_URL=http://localhost:8000/infer`
+     - `PREDICTION_THRESHOLD=0.9`
+     - `MONGODB_URI=mongodb://...` (nếu dùng DB)
+   - Build & chạy dev: `npm run dev` (hoặc build: `npm run build` và `npm start`).
+   - Endpoint test: `POST /predict` (multipart/form-data) hoặc dùng frontend.
+
+3. Frontend (Expo Web)
+   - Cài: `cd frontend && npm ci`
+   - Chạy dev: `npm start` (Expo). Để build web: `npm run build:web` (sẽ xuất `dist/`).
+   - Deploy tĩnh lên Vercel: kết nối repo, set `EXPO_PUBLIC_API_BASE_URL` trên Vercel và triển khai.
+4. Mobile App (Expo trên thiết bị di động)
+
+- Cài dependency: `cd frontend && npm ci`.
+- Thiết đặt biến môi trường local: đặt `EXPO_PUBLIC_API_BASE_URL` trỏ tới backend (ví dụ `http://192.168.1.10:8080` hoặc `https://api.example.com`).
+- Chạy dev server Expo:
+
+```bash
+cd frontend
+npx expo start
+```
+
+- Trên điện thoại: cài ứng dụng **Expo Go** (Android/iOS). Mở Expo trên máy phát triển, quét mã QR hoặc dùng `tunnel` nếu thiết bị không cùng mạng LAN:
+
+```bash
+npx expo start --tunnel
+```
+
+- Chạy trên trình giả lập/emulator:
+
+```bash
+# Android emulator
+npx expo run:android
+
+# iOS simulator (macOS only)
+npx expo run:ios
+```
+
+- Build ứng dụng độc lập (production) bằng EAS Build (khuyến nghị): cấu hình `eas.json`, sau đó:
+
+```bash
+npx eas build --platform android
+npx eas build --platform ios
+```
+
+- Lưu ý:
+- Nếu dùng `EXPO_PUBLIC_API_BASE_URL` cục bộ (LAN), đảm bảo thiết bị và máy dev cùng mạng và backend chấp nhận kết nối từ mạng đó.
+- Trên iOS, để chạy trên thiết bị thật thường cần cấu hình provisioning/profile khi dùng `eas build`.
+
+**Docker & Deploy (Render)**
+
+1. Docker image (root Dockerfile có sẵn): Multi-stage build chứa backend và cài Python runtime để build image đầy đủ.
+2. Render (backend + model trong cùng 1 container) — hoặc tách model service làm 1 service riêng (khuyến nghị):
+   - Option A (Model + Backend trong cùng image): set biến env trên Render: `AI_MODEL_HTTP_URL` trỏ tới nội bộ `http://localhost:8000/infer` (nếu model chạy cùng container). Tuy nhiên cách này gây coupling.
+   - Option B (RECOMMENDED): Triển khai model service (FastAPI) dưới 1 service (Render Web Service) và backend là service khác gọi qua `AI_MODEL_HTTP_URL`.
+3. Bước deploy cơ bản cho mỗi service trên Render:
+   - Tạo Web Service mới → chọn repo / Dockerfile → set Build & Start commands nếu cần.
+   - Add environment variables (AI_MODEL_HTTP_URL, INFERENCE_API_KEY, MONGODB_URI, PREDICTION_THRESHOLD).
+   - Monitor build logs, fix tsc errors (nếu xảy ra, đã giải quyết Buffer typing trong repo bằng casting ở `pythonInference.service.ts`).
+
+**Deploy frontend (Vercel)**
+
+- Connect repo → build command: `npx expo export --platform web` hoặc dùng `npm run build:web`.
+- Output: `dist/` (set as output dir on Vercel). Set env `EXPO_PUBLIC_API_BASE_URL`.
+
+**Bảo mật & quản lý secrets**
+
+- Không commit `.env` hoặc keys vào git. Sử dụng Render / Vercel env settings.
+- Kích hoạt `INFERENCE_API_KEY` trên model service và cấu hình backend để gửi `x-api-key` header.
+
+**Kiểm thử end-to-end (E2E) — Checklist demo**
+
+- Bật model service → kiểm tra `GET /healthz`.
+- Bật backend → gọi `POST /predict` với file âm thanh ví dụ (kịch bản script `frontend/scripts/testResultDisplay.js` có thể dùng).
+- Mở frontend (Vercel) → thử upload / record → quan sát kết quả (chỉ hiển thị `Ripe` hoặc `Unripe`).
+- Kiểm tra trường hợp âm thanh lạ: kết quả phải là `Unripe` theo `PREDICTION_THRESHOLD`.
+
+**Khắc phục sự cố thường gặp**
+
+- TypeScript build fails in Docker: kiểm tra `pythonInference.service.ts` nếu gặp lỗi BodyInit/Buffer. Đã cast Buffer trong file này để tránh lỗi tsc.
+- Model unpickle InconsistentVersionWarning: pin `scikit-learn` phiên bản giống khi training hoặc re-pickle model với phiên bản hiện tại.
+- HTTP inference timeouts: tăng timeout trong backend hoặc tune FastAPI worker số lượng.
+
+**Rollback & monitoring**
+
+- Render/Vercel cung cấp rollback release — giữ tag release trước khi deploy.
+- Thêm logging (appinsights / sentry) và health checks để giám sát model_loaded.
+
+**Slide / Demo tips cho thuyết trình**
+
+- Slide ngắn: 1) Problem, 2) Kiến trúc (diagram), 3) Luồng dữ liệu (record → backend → model → result), 4) Key decisions (HTTP model service, threshold conservative), 5) Live demo checklist.
+- Chuẩn bị 2-3 file âm thanh: (a) valid durian ripe, (b) valid durian unripe, (c) unrelated sound (banana/hammer) để chứng minh fallback về `Unripe`.
+
+**Liên hệ & tiếp theo**
+
+- Muốn tôi tạo slide mẫu (.pptx) và kịch bản demo tự động không? Trả lời "có" nếu bạn muốn tôi tạo sẵn.
+
+File liên quan trong repo:
+
+- Backend: `backend/src/service/pythonInference.service.ts`
+- Model API: `DURIAN_RIPENESS_CLASSIFICATION/api/server.py`
+- Frontend Result: `frontend/src/screens/ResultScreen.tsx`
+
+Hết.# Durian Ripeness Detection App – Deployment Guide
 
 ## 📋 Project Overview
 
