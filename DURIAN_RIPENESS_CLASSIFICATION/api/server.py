@@ -3,13 +3,24 @@ from fastapi.responses import JSONResponse
 import joblib
 import numpy as np
 from pathlib import Path
-from predict import extract_features
+import sys
 import uvicorn
 import tempfile
+import os
+
+# Ensure `src` is on sys.path so we can import `predict.py`
+BASE = Path(__file__).resolve().parents[1]
+SRC_PATH = str(BASE / "src")
+if SRC_PATH not in sys.path:
+    sys.path.insert(0, SRC_PATH)
+
+from predict import extract_features
+
+# Optional API key enforcement: set INFERENCE_API_KEY env var to require requests to include it
+INFERENCE_API_KEY = os.getenv("INFERENCE_API_KEY")
 
 app = FastAPI(title="Durly Inference API")
 
-BASE = Path(__file__).resolve().parents[1]
 MODEL_PATH = BASE / "models" / "random_forest.pkl"
 
 try:
@@ -28,6 +39,17 @@ async def startup_event():
 @app.post("/infer")
 async def infer(request: Request):
     # Accept raw binary body (backend will POST audio bytes with correct content-type)
+    # Authorization (if configured)
+    if INFERENCE_API_KEY:
+        # Accept either 'x-api-key' header or 'Authorization: Bearer <key>'
+        hdr = request.headers.get("x-api-key")
+        if not hdr:
+            auth = request.headers.get("authorization") or ""
+            if auth.lower().startswith("bearer "):
+                hdr = auth.split(" ", 1)[1].strip()
+        if not hdr or hdr != INFERENCE_API_KEY:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+
     if model is None:
         raise HTTPException(status_code=500, detail="Model not loaded")
     try:
@@ -56,6 +78,11 @@ async def infer(request: Request):
         raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/healthz")
+async def healthz():
+    return JSONResponse(content={"status": "ok", "model_loaded": model is not None})
 
 
 if __name__ == "__main__":

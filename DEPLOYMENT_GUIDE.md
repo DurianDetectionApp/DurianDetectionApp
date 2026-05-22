@@ -289,15 +289,16 @@ curl https://your-backend-url.com/api/v1/scans?username=testuser
 
 ## 🔑 Environment Variables Reference
 
-| Variable               | Default                                 | Required | Description                                               |
-| ---------------------- | --------------------------------------- | -------- | --------------------------------------------------------- |
-| `PORT`                 | 8080                                    | No       | Server port; Render/Railway override via process.env.PORT |
-| `HOST`                 | 0.0.0.0                                 | No       | Bind address (0.0.0.0 = listen on all interfaces)         |
-| `MONGODB_URI`          | ─                                       | **YES**  | MongoDB connection string for scan history                |
-| `CORS_ORIGIN`          | \*                                      | No       | Allowed CORS origins; lock down for production            |
-| `PYTHON_BIN`           | python                                  | No       | Path to Python executable if non-standard                 |
-| `AI_MODEL_DIR`         | ./DURIAN_RIPENESS_CLASSIFICATION/models | No       | Directory containing random_forest.pkl                    |
-| `PREDICTION_THRESHOLD` | 0.5                                     | No       | Confidence threshold; below = "undetected"                |
+| Variable               | Default                                 | Required | Description                                                                                                    |
+| ---------------------- | --------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `PORT`                 | 8080                                    | No       | Server port; Render/Railway override via process.env.PORT                                                      |
+| `HOST`                 | 0.0.0.0                                 | No       | Bind address (0.0.0.0 = listen on all interfaces)                                                              |
+| `MONGODB_URI`          | ─                                       | **YES**  | MongoDB connection string for scan history                                                                     |
+| `CORS_ORIGIN`          | \*                                      | No       | Allowed CORS origins; lock down for production                                                                 |
+| `PYTHON_BIN`           | python                                  | No       | Path to Python executable if non-standard                                                                      |
+| `AI_MODEL_DIR`         | ./DURIAN_RIPENESS_CLASSIFICATION/models | No       | Directory containing random_forest.pkl                                                                         |
+| `INFERENCE_API_KEY`    | ─                                       | No       | Optional API key required by the model service; add to backend as `X-API-Key` or `Authorization: Bearer <key>` |
+| `PREDICTION_THRESHOLD` | 0.5                                     | No       | Confidence threshold; below = "undetected"                                                                     |
 
 ---
 
