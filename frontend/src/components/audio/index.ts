@@ -1,1 +1,1 @@
-export { default as AudioWaveform } from "./AudioWaveform";
+export { AudioWaveform } from "./AudioWaveform";

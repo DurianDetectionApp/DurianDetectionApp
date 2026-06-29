@@ -2,6 +2,7 @@ import {
   fingerprintAudio,
   inferAudioWithModel,
 } from "./pythonInference.service";
+import { uploadAudioToS3 } from "./s3.service";
 import { buildDurianAnalysisResult } from "../helper/analysisProfiles";
 import { env } from "../config/env";
 
@@ -17,11 +18,22 @@ export async function analyzeAudioFile(params: {
   originalName: string;
   mimeType: string;
 }) {
-  const inference = await inferAudioWithModel(
-    params.buffer,
-    params.originalName,
-    params.mimeType,
-  );
+  const [inference, s3Url] = await Promise.all([
+    inferAudioWithModel(
+      params.buffer,
+      params.originalName,
+      params.mimeType,
+    ),
+    uploadAudioToS3(
+      params.buffer,
+      params.originalName,
+      params.mimeType,
+    ).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error("[analysis-service] S3 upload promise rejected:", err);
+      return undefined;
+    }),
+  ]);
 
   const probabilityMargin = getProbabilityMargin(inference.probabilities);
   const isStrongRipePrediction =
@@ -31,9 +43,15 @@ export async function analyzeAudioFile(params: {
 
   const normalizedLabel = isStrongRipePrediction ? "ripe" : "unripe";
 
-  return buildDurianAnalysisResult({
+  const result = buildDurianAnalysisResult({
     label: normalizedLabel,
     confidence: inference.confidence,
     audioSeed: fingerprintAudio(params.buffer),
   });
+
+  if (s3Url) {
+    result.audioUri = s3Url;
+  }
+
+  return result;
 }

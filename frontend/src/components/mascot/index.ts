@@ -1,1 +1,1 @@
-export { default as DurlyMascot } from "./DurlyMascot";
+export { DurlyMascot } from "./DurlyMascot";

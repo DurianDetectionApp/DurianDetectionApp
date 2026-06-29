@@ -1,2 +1,2 @@
-export { default as AppHeader } from "./AppHeader";
-export { default as RipenessBadge } from "./RipenessBadge";
+export { AppHeader } from "./AppHeader";
+export { RipenessBadge } from "./RipenessBadge";

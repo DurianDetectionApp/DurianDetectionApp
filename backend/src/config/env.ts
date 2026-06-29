@@ -25,4 +25,9 @@ export const env = {
   inferenceApiKey: process.env.INFERENCE_API_KEY ?? undefined,
   dataDir: path.join(backendRoot, "data"),
   predictionThreshold: Number(process.env.PREDICTION_THRESHOLD ?? 0.9),
+  // AWS S3 Configuration for uploaded audio
+  awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
+  awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? "",
+  awsRegion: process.env.AWS_REGION ?? "",
+  awsS3Bucket: process.env.AWS_S3_BUCKET ?? "",
 };
