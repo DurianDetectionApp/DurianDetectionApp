@@ -77,3 +77,15 @@ Hệ thống vận hành đồng nhất qua 5 giai đoạn từ lúc người d�
 | **Cloud Storage** | AWS S3 SDK (`@aws-sdk/client-s3`) | [s3.service.ts](file:///d:/Durian_App/DurianDetectionApp/backend/src/service/s3.service.ts) |
 | **Database** | MongoDB Atlas, Mongoose ODM | `backend/src/model/scan.model.ts` |
 | **DevOps & Cloud** | Docker, FFmpeg, Render, Vercel | `DURIAN_RIPENESS_CLASSIFICATION/Dockerfile` |
+
+---
+
+## 📚 Tài Liệu Hướng Dẫn & Ôn Tập (Documentation)
+
+Để phục vụ quá trình chạy thử dự án và chuẩn bị phỏng vấn, vui lòng tham khảo các tài liệu chuyên sâu được đính kèm ở thư mục gốc:
+
+* **[LOCAL_RUN_GUIDE.md](LOCAL_RUN_GUIDE.md)**: Hướng dẫn chi tiết cách thiết lập và chạy toàn bộ dự án dưới môi trường local.
+* **[EXPO_GO_GUIDE.md](EXPO_GO_GUIDE.md)**: Hướng dẫn chạy thử ứng dụng di động trên thiết bị thật (iOS/Android) thông qua ứng dụng **Expo Go**.
+* **[Technical_Operation_Flow_Guide.md](Technical_Operation_Flow_Guide.md)**: Luồng hoạt động chi tiết ở mức mã nguồn và sơ đồ dữ liệu cho các câu hỏi kỹ thuật của **Tech Lead**.
+* **[AI_Model_Training_Guide.md](AI_Model_Training_Guide.md)**: Mô tả chi tiết 4 giai đoạn trong quy trình xử lý tín hiệu âm thanh và huấn luyện mô hình học máy **Random Forest**.
+
