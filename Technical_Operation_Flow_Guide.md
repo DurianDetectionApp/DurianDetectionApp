@@ -4,48 +4,7 @@ Tài liệu này mô tả chi tiết cách hệ thống vận hành ở mức m�
 
 ---
 
-## 📊 1. Sơ Đồ Sequence (Sequence Diagram)
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Người dùng
-    participant App as Expo Client (Port 8081)
-    participant API as Node.js Express (Port 3000)
-    participant S3 as AWS S3 Storage
-    participant AI as Python FastAPI (Port 8000)
-    participant DB as MongoDB Atlas
-
-    Note over AI: 0. Startup: Nạp model.pkl vào RAM
-    User->>App: Nhấn 'Start' & 'Stop' ghi âm gõ sầu riêng
-    App->>App: Ghi âm qua expo-av -> tạo file (.webm / .m4a)
-    App->>API: Gọi POST /predict (gửi FormData kèm file nhị phân)
-    Note over API: Multer nhận file, lưu trực tiếp dạng RAM Buffer
-    
-    rect rgb(30, 40, 50)
-        Note over API, AI: Xử lý song song bằng Promise.all
-        API->>S3: Gọi uploadAudioToS3(buffer) [Lưu file]
-        API->>AI: Gửi POST /infer (chuyển tiếp file) [Chạy AI]
-    end
-    
-    S3-->>API: Trả về URL liên kết âm thanh trên S3
-    Note over AI: FFmpeg giải mã âm thanh
-    Note over AI: Librosa trích xuất 18 đặc trưng (MFCC, RMS, ...)
-    Note over AI: Random Forest chạy dự đoán & predict_proba
-    AI-->>API: Trả về kết quả dự đoán (JSON nhãn + % tin cậy)
-    
-    API-->>App: Trả về JSON (Kết quả AI + S3 audio URL)
-    App->>User: Hiển thị kết quả độ chín & biểu đồ tự tin
-    
-    App->>API: Chạy ngầm: POST /api/v1/scans (lưu lịch sử)
-    API->>DB: Mongoose: new Scan(data).save()
-    DB-->>API: Ghi dữ liệu thành công
-    API-->>App: Trả về HTTP 201 Created
-```
-
----
-
-## 🛠️ 2. Chi Tiết Các Bước Chạy & File Mã Nguồn Xử Lý Thực Tế
+## 🛠️ 1. Chi Tiết Các Bước Chạy & File Mã Nguồn Xử Lý Thực Tế
 
 ### Bước 1: Khởi Động & Khởi Tạo Tài Nguyên (Startup Phase)
 * **AI FastAPI (`DURIAN_RIPENESS_CLASSIFICATION/api/server.py`)**:
